@@ -33,7 +33,7 @@ var greenIcon = L.icon({
 
 	var map = L.map('map', {
 		center: [19.179666, 73.024364],
-		zoom: 14.5,
+		zoom: 12,
 		layers: [osm, cities]
 	});
 
@@ -96,13 +96,39 @@ function onMapClick(e) {
 
 map.on('click', onMapClick);
 
-var popup = L.popup()
+/*var popup = L.popup()
     .setLatLng([19.179463, 73.02372])
     .setContent("<b>Welcome<br>to Mumbra.</b>")
-    .openOn(map);
+    .openOn(map);*/
 
 
 
 
+//to get csv file as input
+var fileName;
+$(document).ready(function(){
+    $('input[type="file"]').change(function(e){
+        fileName = e.target.files[0].name;
+        alert('The file "' + fileName +  '" has been selected.');
+    
 
+  // Read markers data from data.csv
+  $.get(fileName, function(csvString) {
+    // Use PapaParse to convert string to array of objects
+    var data = Papa.parse(csvString, {header: true, dynamicTyping: true}).data;
 
+    // For each row in data, create a marker and add it to the map
+    // For each row, columns `Latitude`, `Longitude`, and `Title` are required
+    for (var i in data) {
+      var row = data[i];
+
+      var marker = L.marker([row.Latitude, row.Longitude], {
+        opacity: 1
+      }).bindPopup(row.Title);
+      
+      marker.addTo(map);
+    }
+
+  });
+});
+});
